@@ -1,0 +1,12 @@
+# Arquivos de configuração de serviços - NUNCA ENVIE PARA O GITHUB
+google-services.json
+GoogleService-Info.plist
+admin-key.json
+
+# Ambiente virtual do Python
+.venv/
+venv/
+
+# Arquivos de cache e compilados do Python
+__pycache__/
+*.pyc

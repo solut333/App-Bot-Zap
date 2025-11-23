@@ -1,0 +1,1023 @@
+# app_theme.kv
+
+#:kivy 2.1.0
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+#:import Animation kivy.animation.Animation
+
+WindowManager:
+    transition: FadeTransition(duration=0.2)
+    LoginScreen:
+        name: 'login'
+    RegisterScreen:
+        name: 'register'
+    DashboardScreen:
+        name: 'dashboard'
+    BotListScreen:
+        name: 'bot_list'
+    MyBotsScreen:
+        name: 'my_bots'
+    ProfileScreen:
+        name: 'profile'
+    AboutScreen:
+        name: 'about'
+    InstallScreen:
+        name: 'install'
+    AdminScreen:
+        name: 'admin'
+    PublishScreen:
+        name: 'publish'
+
+<CardBase@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: app.theme.card_bg
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [12]
+
+<StyledButton@Button>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    color: app.theme.text_main
+    bold: True
+    font_size: '16sp'
+    size_hint_y: None
+    height: '48dp'
+    canvas.before:
+        Color:
+            rgba: app.theme.primary if not self.disabled else app.theme.secondary
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [15, 15, 15, 15]
+
+<IconButton@StyledButton>:
+    font_size: '18sp'
+    # No futuro, pode-se usar uma fonte de ícones aqui
+
+<TitleLabel@Label>:
+    color: app.theme.text_main
+    font_size: '22sp'
+    bold: True
+
+<DescriptionLabel@Label>:
+    color: app.theme.text_secondary
+    font_size: '14sp'
+
+<StyledTextInput@TextInput>:
+    background_color: app.theme.card_bg
+    foreground_color: app.theme.text_main
+    cursor_color: app.theme.primary
+    size_hint_y: None
+    height: '48dp'
+    padding: [15, 15, 15, 15]
+
+<AnimatedBackground@Widget>:
+    circles: []
+    on_size: self.setup_circles()
+
+    canvas:
+        Color:
+            rgba: app.theme.background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    def setup_circles(self, *args):
+        self.canvas.after.clear()
+        self.circles = []
+        with self.canvas.after:
+            for i in range(10):
+                x = random.uniform(0, self.width)
+                y = random.uniform(0, self.height)
+                size = random.uniform(self.width * 0.1, self.width * 0.3)
+                color = Color(rgba=app.theme.primary[:3] + [random.uniform(0.05, 0.2)])
+                circle = Ellipse(pos=(x, y), size=(size, size))
+                self.circles.append({'widget': circle, 'color': color, 'anim': None})
+
+    def start_animation(self, *args):
+        for circle_data in self.circles:
+            anim = (Animation(x=random.uniform(0, self.width), y=random.uniform(0, self.height), duration=random.uniform(15, 30), t='in_out_quad') +
+                    Animation(x=random.uniform(0, self.width), y=random.uniform(0, self.height), duration=random.uniform(15, 30), t='in_out_sine'))
+            anim.repeat = True
+            anim.start(circle_data['widget'])
+            circle_data['anim'] = anim
+
+    def stop_animation(self, *args):
+        for circle_data in self.circles:
+            if circle_data['anim']:
+                circle_data['anim'].cancel_all(circle_data['widget'])
+
+<LoginScreen>:
+    FloatLayout:
+        AnimatedBackground:
+            id: animated_background
+        BoxLayout:
+            # Este é o layout que já existia, agora ele fica por cima do fundo animado
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: 1, 1
+            orientation: 'vertical'
+            padding: '30dp'
+            spacing: '15dp'
+            Image:
+                source: app.icon
+                size_hint_y: 0.4
+            TitleLabel:
+                text: 'Login'
+                size_hint_y: 0.1
+            StyledTextInput:
+                id: login_email
+                hint_text: 'Email'
+            StyledTextInput:
+                id: login_password
+                hint_text: 'Senha'
+                password: True
+            StyledButton:
+                text: 'Entrar'
+                on_release: root.do_login()
+            Label:
+                text: f"Não tem uma conta? [ref=register][color={app.theme.primary_hex}]Registre-se[/color][/ref]"
+                markup: True
+                on_ref_press: app.root.current = 'register'
+
+<RegisterScreen>:
+    FloatLayout:
+        AnimatedBackground:
+            id: animated_background
+        BoxLayout:
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: 1, 1
+            orientation: 'vertical'
+            padding: '30dp'
+            spacing: '15dp'
+            TitleLabel:
+                text: 'Criar Conta'
+                size_hint_y: 0.2
+            StyledTextInput:
+                id: register_email
+                hint_text: 'Email'
+            StyledTextInput:
+                id: register_password
+                hint_text: 'Senha'
+                password: True
+            StyledButton:
+                text: 'Registrar'
+                on_release: root.do_register()
+            Label:
+                text: f"Já tem uma conta? [ref=login][color={app.theme.primary_hex}]Faça o login[/color][/ref]"
+                markup: True
+                on_ref_press: app.root.current = 'login'
+
+<BotCard@ButtonBehavior+CardBase>:
+    doc_id: ''
+    download_link: ''
+    opacity: 0
+    size_hint_y: None
+    height: '100dp'
+    padding: '10dp'
+    canvas.after:
+        Line:
+            width: 1
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 12)
+            color: app.theme.primary
+    Image:
+        source: app.icon
+        size_hint_x: 0.2
+    BoxLayout:
+        orientation: 'vertical'
+        TitleLabel:
+            id: bot_name
+            text: 'Nome do Bot'
+            font_size: '18sp'
+        DescriptionLabel:
+            id: bot_info
+            text: 'Informações do Bot'
+    StyledButton:
+        id: install_button
+        text: 'Instalar'
+        size_hint_x: 0.3
+        on_release: app.download_bot(root.download_link, self)
+    BoxLayout:
+        id: admin_actions
+        orientation: 'horizontal'
+        size_hint_x: None
+        width: 0
+        opacity: 0
+        spacing: 5
+        AdminButton:
+            text: 'Editar'
+            bg_color: (0.1, 0.5, 0.8, 1)
+            on_release: app.edit_bot(root.doc_id)
+        AdminButton:
+            text: 'Excluir'
+            bg_color: (0.9, 0.2, 0.2, 1)
+            on_release: app.delete_bot(root.doc_id)
+
+<MyBotCard@CardBase>:
+    file_path: ''
+    size_hint_y: None
+    height: '80dp'
+    padding: '10dp'
+    Label:
+        id: my_bot_name
+        text: 'Nome do Bot'
+        color: app.theme.text_main
+        halign: 'left'
+        valign: 'center'
+        text_size: self.width, None
+    AdminButton:
+        text: 'Excluir'
+        bg_color: (0.9, 0.2, 0.2, 1)
+        size_hint_x: 0.3
+        on_release: app.delete_local_bot(root.file_path)
+
+<AdminButton@Button>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    bold: True
+    font_size: '14sp'
+    size_hint_y: None
+    height: '40dp'
+    color: '#FFFFFF'
+    canvas.before:
+        Color:
+            rgba: self.bg_color if self.state == 'normal' else (self.bg_color[0]*0.8, self.bg_color[1]*0.8, self.bg_color[2]*0.8, 1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [10]
+
+<RequestCard@ButtonBehavior+CardBase>:
+    opacity: 0
+    doc_id: ''
+    is_reviewing: False
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '150dp'
+    padding: '10dp'
+    spacing: '8dp'
+    on_release: app.review_request(root.doc_id)
+    canvas.after:
+        Color:
+            rgba: (0.9, 0.6, 0, 1) if root.is_reviewing else (0,0,0,0)
+        Line:
+            width: 1.5
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 12)
+    Label:
+        id: request_bot_name
+        text: 'Nome do Bot'
+        font_size: '16sp'
+        bold: True
+        halign: 'left'
+        text_size: self.width, None
+        color: app.theme.text_main
+    DescriptionLabel:
+        id: request_user_email
+        text: 'Enviado por: user@example.com'
+        halign: 'left'
+        text_size: self.width, None
+    BoxLayout:
+        size_hint_y: None
+        height: '40dp'
+        spacing: '10dp'
+        AdminButton:
+            text: 'Aprovar'
+            bg_color: app.theme.primary
+            on_release: app.approve_request(root.doc_id)
+        AdminButton:
+            text: 'Rejeitar'
+            bg_color: (0.9, 0.2, 0.2, 1)
+            on_release: app.reject_request(root.doc_id)
+
+<DashboardScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Dashboard'
+                    with_previous: False
+                    app_icon: app.icon
+                ActionToggleButton:
+                    text: 'Tema'
+                    state: 'down' if app.theme_name == 'dark' else 'normal'
+                    on_press: app.toggle_theme()
+        Label:
+            id: welcome_label
+            text: 'Bem-vindo!'
+            size_hint_y: 0.2
+            color: app.theme.text_main
+        GridLayout:
+            cols: 1
+            spacing: '10dp'
+            padding: '10dp'
+            IconButton:
+                text: '⬇ Baixar Bots'
+                on_release: app.root.current = 'bot_list'
+            IconButton:
+                text: '📁 Meus Bots'
+                on_release: app.root.current = 'my_bots'
+            IconButton:
+                text: '⬆ Publicar um Bot'
+                on_release: app.root.current = 'publish'
+            IconButton:
+                text: '⚙️ Perfil'
+                on_release: app.root.current = 'profile'
+            IconButton:
+                text: 'ℹ️ Sobre'
+                on_release: app.root.current = 'about'
+            IconButton:
+                text: '🚪 Logout'
+                on_release: app.logout()
+
+<BotListScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Baixar Bots'
+                    on_release: app.root.current = 'dashboard'
+        StyledTextInput:
+            id: search_bar
+            hint_text: 'Pesquisar bots...'
+            size_hint_y: None
+            height: '48dp'
+            on_text: root.filter_bots(self.text)
+            multiline: False
+            padding: [40, 15, 15, 15]
+        ScrollView:
+            GridLayout:
+                id: bot_list_layout
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '8dp'
+
+<MyBotsScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Meus Bots Baixados'
+                    on_release: app.root.current = 'dashboard'
+        ScrollView:
+            GridLayout:
+                id: my_bots_list
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '8dp'
+
+<ProfileScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        spacing: '10dp'
+        padding: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Meu Perfil'
+                    on_release: app.root.current = 'dashboard'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '20dp'
+            spacing: '20dp'
+            TitleLabel:
+                text: 'Gerenciar Conta'
+                size_hint_y: None
+                height: '40dp'
+            StyledTextInput:
+                id: new_password_input
+                hint_text: 'Nova Senha'
+                password: True
+            StyledButton:
+                text: 'Alterar Senha'
+                on_release: app.change_password(new_password_input.text)
+            Label: # Espaçador
+            AdminButton:
+                text: 'Excluir Minha Conta'
+                bg_color: (0.9, 0.2, 0.2, 1)
+                on_release: app.delete_account()
+
+<AboutScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Sobre'
+                    on_release: app.root.current = 'dashboard'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '30dp'
+            spacing: '20dp'
+            Image:
+                source: app.icon
+                size_hint_y: 0.3
+            TitleLabel:
+                text: 'Bot Deploy'
+                size_hint_y: 0.1
+            DescriptionLabel:
+                text: 'Versão 1.0\n\nCriado por: [Seu Nome]\n\nEste aplicativo permite o download e gerenciamento de bots para WhatsApp.'
+                halign: 'center'
+
+<InstallScreen>:
+    id: install_screen
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Instalação'
+                    on_release: app.root.current = 'dashboard'
+        TextInput:
+            id: terminal_output
+            background_color: app.theme.card_bg
+            foreground_color: app.theme.primary
+            font_name: 'data/fonts/RobotoMono-Regular.ttf'
+            readonly: True
+            text: "Aguardando um bot ser instalado..."
+        StyledButton:
+            text: 'Executar no Termux'
+            size_hint_y: None
+            height: '50dp'
+            on_release: app.execute_in_termux()
+
+<PublishScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Publicar Bot'
+                    on_release: app.root.current = 'dashboard'
+        ScrollView:
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '10dp'
+                TitleLabel:
+                    text: 'Submeta seu Bot'
+                    size_hint_y: None
+                    height: '40dp'
+                StyledTextInput:
+                    id: bot_name_input
+                    hint_text: 'Nome do Bot'
+                StyledTextInput:
+                    id: bot_desc_input
+                    hint_text: 'Breve descrição'
+                StyledTextInput:
+                    id: bot_link_input
+                    hint_text: 'Link para o arquivo .py'
+                Label:
+                    text: 'A publicação é gratuita.\nSua submissão será revisada pela administração.'
+                    color: app.theme.text_secondary
+                    size_hint_y: None
+                    height: '60dp'
+                StyledButton:
+                    text: 'Solicitar Publicação'
+                    on_release: root.submit_publication_request()
+
+<AdminScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Painel do Administrador'
+                    with_previous: False
+                ActionToggleButton:
+                    text: 'Tema'
+                    state: 'down' if app.theme_name == 'dark' else 'normal'
+                    on_press: app.toggle_theme()
+                ActionSeparator:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.5
+            padding: '10dp'
+            spacing: '10dp'
+            TitleLabel:
+                text: 'Publicar Novo Bot'
+                size_hint_y: None
+                height: '40dp'
+            StyledTextInput:
+                id: admin_bot_name
+                hint_text: 'Nome do Bot'
+            StyledTextInput:
+                id: admin_bot_version
+                hint_text: 'Versão (ex: 1.0)'
+            StyledTextInput:
+                id: admin_bot_link
+                hint_text: 'Link para o arquivo .py'
+            StyledButton:
+                text: 'Publicar Agora'
+                on_release: root.publish_bot_directly()
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            TitleLabel:
+                text: 'Solicitações Pendentes'
+                size_hint_y: 0.2
+            ScrollView:
+                GridLayout:
+                    id: pending_list_layout
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '8dp'
+            TitleLabel:
+                text: 'Em Revisão'
+                size_hint_y: 0.2
+            ScrollView:
+                GridLayout:
+                    id: reviewing_list_layout
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '8dp'
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: '10dp'
+            StyledButton:
+                text: 'Logout'
+                on_release: app.logout()
+        orientation: 'vertical'
+        padding: '30dp'
+        spacing: '15dp'
+        Image:
+            source: 'icon_transparent_style4.png'
+            size_hint_y: 0.4
+        TitleLabel:
+            text: 'Login'
+            size_hint_y: 0.1
+        StyledTextInput:
+            id: login_email
+            hint_text: 'Email'
+        StyledTextInput:
+            id: login_password
+            hint_text: 'Senha'
+            password: True
+        StyledButton:
+            text: 'Entrar'
+            on_release: root.do_login()
+        Label:
+            text: f"Não tem uma conta? [ref=register][color={app.theme.primary_hex}]Registre-se[/color][/ref]"
+            markup: True
+            on_ref_press: app.root.current = 'register'
+
+<RegisterScreen>:
+    canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '30dp'
+        spacing: '15dp'
+        TitleLabel:
+            text: 'Criar Conta'
+            size_hint_y: 0.2
+        StyledTextInput:
+            id: register_email
+            hint_text: 'Email'
+        StyledTextInput:
+            id: register_password
+            hint_text: 'Senha'
+            password: True
+        StyledButton:
+            text: 'Registrar'
+            on_release: root.do_register()
+        Label:
+            text: f"Já tem uma conta? [ref=login][color={app.theme.primary_hex}]Faça o login[/color][/ref]"
+            markup: True
+            on_ref_press: app.root.current = 'login'
+
+<BotCard@ButtonBehavior+CardBase>:
+    doc_id: ''
+    download_link: ''
+    opacity: 0
+    size_hint_y: None
+    height: '100dp'
+    padding: '10dp'
+    canvas.after:
+        Line:
+            width: 1
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 12)
+            color: app.theme.primary
+    Image:
+        source: 'icon_transparent_style4.png'
+        size_hint_x: 0.2
+    BoxLayout:
+        orientation: 'vertical'
+        TitleLabel:
+            id: bot_name
+            text: 'Nome do Bot'
+            font_size: '18sp'
+        DescriptionLabel:
+            id: bot_info
+            text: 'Informações do Bot'
+    StyledButton:
+        id: install_button
+        text: 'Instalar'
+        size_hint_x: 0.3
+        on_release: app.download_bot(root.download_link, self)
+    BoxLayout:
+        id: admin_actions
+        orientation: 'horizontal'
+        size_hint_x: None
+        width: 0
+        opacity: 0
+        spacing: 5
+        AdminButton:
+            text: 'Editar'
+            bg_color: (0.1, 0.5, 0.8, 1)
+            on_release: app.edit_bot(root.doc_id)
+        AdminButton:
+            text: 'Excluir'
+            bg_color: (0.9, 0.2, 0.2, 1)
+            on_release: app.delete_bot(root.doc_id)
+
+<MyBotCard@CardBase>:
+    file_path: ''
+    size_hint_y: None
+    height: '80dp'
+    padding: '10dp'
+    Label:
+        id: my_bot_name
+        text: 'Nome do Bot'
+        color: app.theme.text_main
+        halign: 'left'
+        valign: 'center'
+        text_size: self.width, None
+    AdminButton:
+        text: 'Excluir'
+        bg_color: (0.9, 0.2, 0.2, 1)
+        size_hint_x: 0.3
+        on_release: app.delete_local_bot(root.file_path)
+
+<AdminButton@Button>:
+    background_color: 0, 0, 0, 0
+    background_normal: ''
+    bold: True
+    font_size: '14sp'
+    size_hint_y: None
+    height: '40dp'
+    color: '#FFFFFF'
+    canvas.before:
+        Color:
+            rgba: self.bg_color if self.state == 'normal' else (self.bg_color[0]*0.8, self.bg_color[1]*0.8, self.bg_color[2]*0.8, 1)
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [10]
+
+<RequestCard@ButtonBehavior+CardBase>:
+    opacity: 0
+    doc_id: ''
+    is_reviewing: False
+    orientation: 'vertical'
+    size_hint_y: None
+    height: '150dp'
+    padding: '10dp'
+    spacing: '8dp'
+    on_release: app.review_request(root.doc_id)
+    canvas.after:
+        Color:
+            rgba: (0.9, 0.6, 0, 1) if root.is_reviewing else (0,0,0,0)
+        Line:
+            width: 1.5
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 12)
+    Label:
+        id: request_bot_name
+        text: 'Nome do Bot'
+        font_size: '16sp'
+        bold: True
+        halign: 'left'
+        text_size: self.width, None
+        color: app.theme.text_main
+    DescriptionLabel:
+        id: request_user_email
+        text: 'Enviado por: user@example.com'
+        halign: 'left'
+        text_size: self.width, None
+    BoxLayout:
+        size_hint_y: None
+        height: '40dp'
+        spacing: '10dp'
+        AdminButton:
+            text: 'Aprovar'
+            bg_color: app.theme.primary
+            on_release: app.approve_request(root.doc_id)
+        AdminButton:
+            text: 'Rejeitar'
+            bg_color: (0.9, 0.2, 0.2, 1)
+            on_release: app.reject_request(root.doc_id)
+
+<DashboardScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Dashboard'
+                    with_previous: False
+                    app_icon: 'icon_transparent_style4.png'
+                ActionToggleButton:
+                    text: 'Tema'
+                    state: 'down' if app.theme_name == 'dark' else 'normal'
+                    on_press: app.toggle_theme()
+        Label:
+            id: welcome_label
+            text: 'Bem-vindo!'
+            size_hint_y: 0.2
+            color: app.theme.text_main
+        GridLayout:
+            cols: 1
+            spacing: '10dp'
+            padding: '10dp'
+            IconButton:
+                text: '⬇ Baixar Bots'
+                on_release: app.root.current = 'bot_list'
+            IconButton:
+                text: '📁 Meus Bots'
+                on_release: app.root.current = 'my_bots'
+            IconButton:
+                text: '⬆ Publicar um Bot'
+                on_release: app.root.current = 'publish'
+            IconButton:
+                text: '⚙️ Perfil'
+                on_release: app.root.current = 'profile'
+            IconButton:
+                text: 'ℹ️ Sobre'
+                on_release: app.root.current = 'about'
+            IconButton:
+                text: '🚪 Logout'
+                on_release: app.logout()
+
+<BotListScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Baixar Bots'
+                    on_release: app.root.current = 'dashboard'
+        StyledTextInput:
+            id: search_bar
+            hint_text: 'Pesquisar bots...'
+            size_hint_y: None
+            height: '48dp'
+            on_text: root.filter_bots(self.text)
+            multiline: False
+            padding: [40, 15, 15, 15]
+        ScrollView:
+            GridLayout:
+                id: bot_list_layout
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '8dp'
+
+<MyBotsScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Meus Bots Baixados'
+                    on_release: app.root.current = 'dashboard'
+        ScrollView:
+            GridLayout:
+                id: my_bots_list
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '8dp'
+
+<ProfileScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        spacing: '10dp'
+        padding: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Meu Perfil'
+                    on_release: app.root.current = 'dashboard'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '20dp'
+            spacing: '20dp'
+            TitleLabel:
+                text: 'Gerenciar Conta'
+                size_hint_y: None
+                height: '40dp'
+            StyledTextInput:
+                id: new_password_input
+                hint_text: 'Nova Senha'
+                password: True
+            StyledButton:
+                text: 'Alterar Senha'
+                on_release: app.change_password(new_password_input.text)
+            Label: # Espaçador
+            AdminButton:
+                text: 'Excluir Minha Conta'
+                bg_color: (0.9, 0.2, 0.2, 1)
+                on_release: app.delete_account()
+
+<AboutScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Sobre'
+                    on_release: app.root.current = 'dashboard'
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '30dp'
+            spacing: '20dp'
+            Image:
+                source: 'icon_transparent_style4.png'
+                size_hint_y: 0.3
+            TitleLabel:
+                text: 'Bot Deploy'
+                size_hint_y: 0.1
+            DescriptionLabel:
+                text: 'Versão 1.0\n\nCriado por: [Seu Nome]\n\nEste aplicativo permite o download e gerenciamento de bots para WhatsApp.'
+                halign: 'center'
+
+<InstallScreen>:
+    id: install_screen
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Instalação'
+                    on_release: app.root.current = 'dashboard'
+        TextInput:
+            id: terminal_output
+            background_color: app.theme.card_bg
+            foreground_color: app.theme.primary
+            font_name: 'data/fonts/RobotoMono-Regular.ttf'
+            readonly: True
+            text: "Aguardando um bot ser instalado..."
+        StyledButton:
+            text: 'Executar no Termux'
+            size_hint_y: None
+            height: '50dp'
+            on_release: app.execute_in_termux()
+
+<PublishScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Publicar Bot'
+                    on_release: app.root.current = 'dashboard'
+        ScrollView:
+            GridLayout:
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: '10dp'
+                spacing: '10dp'
+                TitleLabel:
+                    text: 'Submeta seu Bot'
+                    size_hint_y: None
+                    height: '40dp'
+                StyledTextInput:
+                    id: bot_name_input
+                    hint_text: 'Nome do Bot'
+                StyledTextInput:
+                    id: bot_desc_input
+                    hint_text: 'Breve descrição'
+                StyledTextInput:
+                    id: bot_link_input
+                    hint_text: 'Link para o arquivo .py'
+                Label:
+                    text: 'Custo da publicação: $20.00 USD\n(Pagamento será solicitado após a aprovação)'
+                    color: app.theme.text_secondary
+                    size_hint_y: None
+                    height: '60dp'
+                StyledButton:
+                    text: 'Solicitar Publicação'
+                    on_release: root.submit_publication_request()
+
+<AdminScreen>:
+    BoxLayout:
+        canvas.before: {Color: {rgba: app.theme.background}, Rectangle: {pos: self.pos, size: self.size}}
+        orientation: 'vertical'
+        padding: '10dp'
+        spacing: '10dp'
+        ActionBar:
+            background_color: app.theme.background
+            ActionView:
+                ActionPrevious:
+                    title: 'Painel do Administrador'
+                    with_previous: False
+                ActionToggleButton:
+                    text: 'Tema'
+                    state: 'down' if app.theme_name == 'dark' else 'normal'
+                    on_press: app.toggle_theme()
+                ActionSeparator:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.5
+            padding: '10dp'
+            spacing: '10dp'
+            TitleLabel:
+                text: 'Publicar Novo Bot'
+                size_hint_y: None
+                height: '40dp'
+            StyledTextInput:
+                id: admin_bot_name
+                hint_text: 'Nome do Bot'
+            StyledTextInput:
+                id: admin_bot_version
+                hint_text: 'Versão (ex: 1.0)'
+            StyledTextInput:
+                id: admin_bot_link
+                hint_text: 'Link para o arquivo .py'
+            StyledButton:
+                text: 'Publicar Agora'
+                on_release: root.publish_bot_directly()
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            TitleLabel:
+                text: 'Solicitações Pendentes'
+                size_hint_y: 0.2
+            ScrollView:
+                GridLayout:
+                    id: pending_list_layout
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '8dp'
+            TitleLabel:
+                text: 'Em Revisão'
+                size_hint_y: 0.2
+            ScrollView:
+                GridLayout:
+                    id: reviewing_list_layout
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: '8dp'
+        BoxLayout:
+            size_hint_y: 0.1
+            padding: '10dp'
+            StyledButton:
+                text: 'Logout'
+                on_release: app.logout()
