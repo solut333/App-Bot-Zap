@@ -1,89 +1,102 @@
-██╗   ███╗██╗   ██╗███╗   ██╗██╗   ██╗
-████╗ ████║╚██╗ ██╔╝████╗  ██║╚██╗ ██╔╝       ⚡ BOT ZAP ⚡
-██╔████╔██║ ╚████╔╝ ██╔██╗ ██║ ╚████╔╝     Neon Automation System
-██║╚██╔╝██║  ╚██╔╝  ██║╚██╗██║  ╚██╔╝
-██║ ╚═╝ ██║   ██║   ██║ ╚████║   ██║
-╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═══╝   ╚═╝       Python • Firebase • Kivy • Android
+██████╗  ██████╗ ████████╗     ██████╗  ██████╗ ████████╗     ███████╗ █████╗ ██████╗ 
+██╔══██╗██╔═══██╗╚══██╔══╝    ██╔════╝ ██╔═══██╗╚══██╔══╝     ██╔════╝██╔══██╗██╔══██╗
+██████╔╝██║   ██║   ██║       ██║  ███╗██║   ██║   ██║        █████╗  ███████║██████╔╝
+██╔══██╗██║   ██║   ██║       ██║   ██║██║   ██║   ██║        ██╔══╝  ██╔══██║██╔══██╗
+██████╔╝╚██████╔╝   ██║       ╚██████╔╝╚██████╔╝   ██║        ███████╗██║  ██║██║  ██║
+╚═════╝  ╚═════╝    ╚═╝        ╚═════╝  ╚═════╝    ╚═╝        ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
 
-⠀⠀⠀⠀💠 NΞØN • ÍCØN 💠
-⠀⠀⠀⠀    ╔════════╗
-⠀⠀⠀⠀    ║  ⚡BOT⚡  ║
-⠀⠀⠀⠀    ╚════════╝
-⠀⠀⠀⠀      ⟆ Glow Mode ⟆
+# 🚀 App Bot Zap – Automação Inteligente para Android
 
-<p align="center"> <img src="https://img.shields.io/badge/STATUS-ATIVO-00ffff?style=for-the-badge" /> <img src="https://img.shields.io/badge/PYTHON-3.11-00ffea?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/KIVY-FRAMEWORK-00ffc8?style=for-the-badge" /> <img src="https://img.shields.io/badge/FIREBASE-CONNECTED-00ffbf?style=for-the-badge" /> </p>
+![App Bot Zap](https://img.shields.io/badge/App%20Bot%20Zap-PRO%20Edition-%239b59b6?style=for-the-badge&logo=python&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Android-%232ecc71?style=for-the-badge&logo=android&logoColor=white)
+![Firebase](https://img.shields.io/badge/Cloud-Firebase-%23f39c12?style=for-the-badge&logo=firebase&logoColor=white)
+![Buildozer](https://img.shields.io/badge/Builder-Buildozer-%23e74c3c?style=for-the-badge&logo=linux&logoColor=white)
+![Maintainer](https://img.shields.io/badge/Maintainer-Antonio%20Jose-%231abc9c?style=for-the-badge&logo=github&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Ativo-%23e67e22?style=for-the-badge)
 
-O App Bot Zap é um sistema de automação moderno criado em Python, com interface minimalista em Kivy, backend integrado ao Firebase e suporte nativo para Android via Buildozer. Foi projetado seguindo padrões de arquitetura limpa, modularização avançada, UI responsiva e estética neon futurista, focado em eficiência, escalabilidade e visual moderno.
-🔥 Destaques
+Um aplicativo avançado desenvolvido em **Python + Kivy**, integrado ao **Firebase**, com build configurado para **Android** via Buildozer.  
+Feito para ser **rápido, modular, expansível e totalmente pronto para evoluir** para um bot completo.
 
-• Interface neon minimalista
-• Automação inteligente
-• Conexão Firebase estável
-• Deploy Android pronto
-• Arquitetura organizada em camadas
-• Código limpo, modular e expansível
-🧩 Arquitetura Técnica
+---
 
-Presentation Layer:
-• app_theme.kv — estilos, responsividade, componentes neon
-• app icon.png — identidade visual
+## 🧠 Visão Geral
 
-Application Layer:
-• main.py — núcleo da aplicação
-• firebase_config.py — conexão e handlers do Firebase
+O App Bot Zap foi criado para ser a base de qualquer automação que exija:
 
-Build Layer:
-• buildozer.spec — permissões, dependências, build Android
+✔ Interface limpa e personalizável  
+✔ Comunicação em tempo real com banco de dados  
+✔ Execução modular de tarefas  
+✔ Integração com serviços externos  
 
-Version Control:
-• .gitignore
-• fluxo Git organizado
-⚙️ Fluxo do Sistema
+O objetivo é entregar um app **forte, elegante e pronto para produção**.
 
-    Inicialização da UI neon
+---
 
-    Configuração Firebase
+## 🧩 Stack Tecnológica
 
-    Carregamento dos controladores
+| Tecnologia | Função |
+|-----------|--------|
+| **Python 3** | Lógica do app |
+| **Kivy** | Interface mobile |
+| **Firebase** | Realtime Database / Cloud |
+| **Buildozer** | Empacotamento Android |
+| **Arquitetura Modular** | Expansão fácil |
 
-    Loop de eventos Kivy
+---
 
-    Execução das automações
+## 📂 Estrutura do Projeto
 
-    Retorno ao usuário ou backend
+App Bot Zap/
+│
+├── main.py # Lógica principal
+├── firebase_config.py # Integração Firebase
+├── app_theme.kv # Interface visual
+├── buildozer.spec # Configurações para APK
+├── app icon.png # Ícone do app
+└── .gitignore
 
-🧪 Tecnologias
 
-Python (core e lógica)
-Kivy (UI responsiva neon)
-Firebase (auth, dados, tokens)
-Buildozer (Android)
-📦 Instalação e Execução
+---
 
-Desktop:
+## ⚙ Como Executar
 
-pip install kivy firebase-admin
+### Instale dependências
+```bash
+pip install kivy
+pip install pyrebase4
+
+Inicie o app
+
 python main.py
 
-Android Debug:
+📦 Gerando APK
 
 buildozer android debug
 
-Android Release:
+O APK será gerado em:
 
-buildozer android release
+bin/
 
-🛡️ Padrões Seguidos
+🔮 Futuras Atualizações
 
-PEP8, camadas separadas, UI responsiva, documentação inline, modularização avançada e Git Flow adequado.
-📈 Roadmap
+Login com Firebase Auth
 
-• Tema neon animado
-• Integração com APIs externas
-• Modo Offline
-• Build iOS
-• Versão KivyMD Neon
+Dashboard administrativo
+
+Sistema completo de logs
+
+Interface em KivyMD
+
+Temas dinâmicos (dark/light)
+
+    Plugins adicionais para automações
+
 👤 Autor
 
-Antonio José — Criador do App Bot Zap
-Especialista em Python, Automação e Design Neon Minimalista
+Antonio Jose
+💎 Criador e mantenedor do projeto
+🔧 Aberto a contribuições e novas ideias
+⭐ Contribua
+
+Gostou do projeto?
+Deixe uma ⭐ no GitHub para apoiar o desenvolvimento!
